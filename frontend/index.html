@@ -1,50 +1,33 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartBuilder Pro - Многофункциональный инструмент городской жизни и его планирования | Кыргызстан</title>
-    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SmartBuilder Pro - Инструмент городского планирования | Кыргызстан</title>
+
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
-          crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          crossorigin="anonymous" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
-    
+
     <style>
+        /* Цвета Eco */
         :root {
-            --color-white: rgba(255, 255, 255, 1);
-            --color-cream-50: rgba(252, 252, 249, 1);
-            --color-cream-100: rgba(255, 255, 253, 1);
-            --color-gray-200: rgba(245, 245, 245, 1);
-            --color-gray-300: rgba(167, 169, 169, 1);
-            --color-gray-400: rgba(119, 124, 124, 1);
-            --color-slate-500: rgba(98, 108, 113, 1);
-            --color-brown-600: rgba(94, 82, 64, 1);
-            --color-charcoal-700: rgba(31, 33, 33, 1);
-            --color-charcoal-800: rgba(38, 40, 40, 1);
-            --color-slate-900: rgba(19, 52, 59, 1);
-            --color-teal-300: rgba(50, 184, 198, 1);
-            --color-teal-400: rgba(45, 166, 178, 1);
-            --color-teal-500: rgba(33, 128, 141, 1);
-            --color-teal-600: rgba(29, 116, 128, 1);
-            --color-teal-700: rgba(26, 104, 115, 1);
-            --color-red-400: rgba(255, 84, 89, 1);
-            --color-orange-400: rgba(230, 129, 97, 1);
-            --color-orange-500: rgba(168, 75, 47, 1);
-            --color-green-500: rgba(34, 197, 94, 1);
-            --color-blue-400: rgba(59, 130, 246, 1);
-            --color-purple-400: rgba(168, 85, 247, 1);
-            --color-background: var(--color-cream-50);
-            --color-surface: var(--color-cream-100);
-            --color-text: var(--color-slate-900);
-            --color-text-secondary: var(--color-slate-500);
-            --color-primary: var(--color-teal-500);
-            --color-primary-hover: var(--color-teal-600);
-            --color-border: rgba(94, 82, 64, 0.2);
-            --color-card-border: rgba(94, 82, 64, 0.12);
+            --color-cream: #f7f5f0;
+            --color-beige: #d9cfc1;
+            --color-olive-green: #758a4f;
+            --color-moss-green: #6b8a45;
+            --color-earth-brown: #8b6c42;
+            --color-soft-white: #f9f7f3;
+            --color-text: #3d3c34;
+            --color-text-secondary: #6c6b5a;
+            --color-primary: #627b35; /* натуральный зеленый */
+            --color-primary-hover: #51642b;
+            --color-border: #d3c9b6;
+            --color-card-shadow: rgba(101, 90, 72, 0.25);
         }
 
+        /* Основные сбросы */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -52,89 +35,106 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--color-background);
+            font-family: 'Georgia', serif;
+            background-color: var(--color-cream);
             color: var(--color-text);
             height: 100vh;
             overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .app-header {
-            background: var(--color-surface);
-            border-bottom: 1px solid var(--color-border);
-            padding: 16px 24px;
+            background: var(--color-soft-white);
+            border-bottom: 2px solid var(--color-border);
+            padding: 18px 28px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 100;
+            box-shadow: 0 2px 6px var(--color-card-shadow);
+            user-select: none;
         }
 
         .app-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--color-text);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-moss-green);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
+            font-family: 'Georgia', serif;
         }
 
         .logo {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, var(--color-primary), var(--color-teal-700));
-            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            background: var(--color-olive-green);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: bold;
+            color: var(--color-soft-white);
+            font-weight: 700;
+            font-size: 18px;
+            font-family: 'Courier New', Courier, monospace;
+            box-shadow: 0 0 12px 1px rgba(98,123,53,0.8);
         }
 
         .app-subtitle {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--color-text-secondary);
-            margin-left: 44px;
+            margin-left: 48px;
+            font-style: italic;
         }
 
         .backend-status {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            padding: 6px 12px;
-            border-radius: 6px;
-            background: rgba(33, 128, 141, 0.1);
+            gap: 10px;
+            font-size: 13px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            background: #d0e2a0b8;
+            color: var(--color-olive-green);
+            font-weight: 600;
+            box-shadow: 0 0 6px var(--color-primary);
+            user-select: none;
         }
 
         .status-indicator {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: var(--color-green-500);
-            animation: pulse 2s infinite;
+            background: var(--color-primary);
+            animation: pulseEco 2.4s infinite;
         }
 
-        @keyframes pulse {
+        @keyframes pulseEco {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            50% { opacity: 0.4; }
         }
 
         .app-container {
             display: flex;
-            height: calc(100vh - 88px);
+            height: calc(100vh - 80px);
+            background: var(--color-soft-white);
         }
 
         .sidebar {
             width: 360px;
-            background: var(--color-surface);
-            border-right: 1px solid var(--color-border);
+            background: var(--color-cream);
+            border-right: 2px solid var(--color-border);
+            padding: 24px 20px 20px 20px;
             overflow-y: auto;
-            padding: 20px;
+            box-shadow: inset -4px 0 6px -4px var(--color-card-shadow);
         }
 
         .map-container {
             flex: 1;
             position: relative;
+            box-shadow: inset 4px 0 6px -4px var(--color-card-shadow);
+            border-radius: 0 14px 14px 0;
+            overflow: hidden;
         }
 
         #map {
@@ -142,197 +142,223 @@
             height: 100%;
         }
 
-        .section {
-            margin-bottom: 24px;
-        }
-
         .section-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--color-text);
+            color: var(--color-olive-green);
+            margin-bottom: 16px;
+            user-select: none;
+            text-shadow: 1px 1px 0 #fff8e1;
         }
 
         .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
             width: 100%;
-            margin-bottom: 8px;
-        }
-
-        .btn-primary {
-            background: var(--color-primary);
-            color: white;
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-soft-white);
+            background: var(--color-olive-green);
+            border: none;
+            margin-bottom: 14px;
+            box-shadow: 0 6px 14px rgba(98, 123, 53, 0.5);
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.2s ease;
+            user-select: none;
+            text-align: center;
+            font-family: 'Georgia', serif;
         }
 
         .btn-primary:hover {
-            background: var(--color-primary-hover);
+            background: var(--color-moss-green);
+            box-shadow: 0 8px 18px rgba(107,138,69, 0.8);
         }
 
         .btn-secondary {
-            background: rgba(94, 82, 64, 0.12);
-            color: var(--color-text);
+            background: var(--color-beige);
+            color: var(--color-earth-brown);
+            box-shadow: 0 2px 6px rgba(139,108,66, 0.5);
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 16px;
+            border: 2px solid var(--color-olive-green);
+            cursor: pointer;
+            transition: background-color 0.25s ease;
+            font-family: 'Georgia', serif;
         }
 
         .btn-secondary:hover {
-            background: rgba(94, 82, 64, 0.2);
+            background: var(--color-olive-green);
+            color: var(--color-soft-white);
+            box-shadow: 0 6px 14px rgba(98,123,53,0.6);
         }
 
         .btn:disabled {
-            opacity: 0.5;
             cursor: not-allowed;
-        }
-
-        .building-type-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .building-type-btn {
-            padding: 12px;
-            border: 2px solid var(--color-border);
-            border-radius: 8px;
-            background: var(--color-surface);
-            color: var(--color-text);
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 12px;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        .building-type-btn:hover {
-            border-color: var(--color-primary);
-            background: rgba(33, 128, 141, 0.05);
-        }
-
-        .building-type-btn.active {
-            border-color: var(--color-primary);
-            background: rgba(33, 128, 141, 0.15);
-            color: var(--color-primary);
+            opacity: 0.5;
+            box-shadow: none;
+            background: var(--color-beige);
+            color: var(--color-earth-brown);
+            border-color: var(--color-border);
         }
 
         .metric-card {
-            background: var(--color-surface);
-            border: 1px solid var(--color-card-border);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
+            background: var(--color-cream);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(107,138,69,0.15);
+            padding: 18px 22px;
+            margin-bottom: 18px;
+            font-family: 'Georgia', serif;
+            color: var(--color-earth-brown);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .metric-card:hover {
+            box-shadow: 0 12px 28px rgba(107,138,69,0.3);
         }
 
         .metric-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .metric-name {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--color-text);
+            font-size: 16px;
+            font-weight: 700;
+            user-select: none;
         }
 
         .metric-score {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--color-primary);
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--color-olive-green);
+            user-select: none;
         }
 
         .metric-bar {
-            height: 8px;
-            background: rgba(94, 82, 64, 0.1);
-            border-radius: 4px;
+            height: 12px;
+            background: var(--color-beige);
+            border-radius: 14px;
             overflow: hidden;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .metric-bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--color-primary), var(--color-teal-400));
-            transition: width 0.3s;
+            width: 0%;
+            background: linear-gradient(90deg, var(--color-olive-green), var(--color-moss-green));
+            border-radius: 14px;
+            transition: width 0.6s ease-in-out;
+            box-shadow: 0 2px 6px rgba(107,138,69,0.4);
         }
 
         .alert {
-            background: rgba(33, 128, 141, 0.1);
-            border: 1px solid var(--color-primary);
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 12px;
-            color: var(--color-text);
-            margin-bottom: 16px;
+            background: #cce0b0c2;
+            border: 2px solid var(--color-moss-green);
+            border-radius: 18px;
+            padding: 14px 18px;
+            font-size: 14px;
+            color: var(--color-earth-brown);
+            margin-bottom: 18px;
+            user-select: none;
+            box-shadow: 0 6px 20px rgba(101,142,58,0.15);
         }
 
         .investment-card {
-            background: linear-gradient(135deg, rgba(33, 128, 141, 0.05), rgba(50, 184, 198, 0.05));
-            border: 1px solid var(--color-primary);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
+            background: linear-gradient(135deg, #ecf2dc, #d7e0b0);
+            border: 2px solid var(--color-olive-green);
+            border-radius: 18px;
+            padding: 22px 26px;
+            margin-bottom: 18px;
+            font-family: 'Georgia', serif;
+            color: var(--color-earth-brown);
+            box-shadow: 0 8px 22px rgba(107,138,69,0.2);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .investment-card:hover {
+            box-shadow: 0 12px 28px rgba(107,138,69,0.4);
         }
 
         .investment-score {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--color-primary);
-            margin-bottom: 8px;
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--color-moss-green);
+            margin-bottom: 10px;
+            user-select: none;
         }
 
         .investment-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--color-text);
-            margin-bottom: 4px;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            user-select: none;
         }
 
         .investment-desc {
-            font-size: 12px;
-            color: var(--color-text-secondary);
-            line-height: 1.4;
+            font-size: 14px;
+            line-height: 1.5;
+            user-select: none;
+            color: var(--color-earth-brown);
+            font-style: italic;
         }
 
         .tabs {
             display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            border-bottom: 1px solid var(--color-border);
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--color-border);
             flex-wrap: wrap;
+            user-select: none;
         }
 
         .tab-btn {
-            padding: 8px 12px;
-            background: none;
-            border: none;
+            padding: 14px 20px;
+            background: var(--color-cream);
+            border: 2px solid var(--color-olive-green);
+            border-bottom: none;
+            border-radius: 18px 18px 0 0;
             cursor: pointer;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--color-text-secondary);
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-            white-space: nowrap;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--color-olive-green);
+            transition: background-color 0.25s ease, box-shadow 0.3s ease;
+            user-select: none;
         }
 
         .tab-btn.active {
-            color: var(--color-primary);
-            border-bottom-color: var(--color-primary);
+            background: var(--color-moss-green);
+            color: var(--color-soft-white);
+            border-color: var(--color-moss-green);
+            box-shadow: 0 6px 20px rgba(107,138,69,0.3);
+            font-weight: 900;
         }
 
         .tab-content {
             display: none;
+            padding-bottom: 20px;
         }
 
         .tab-content.active {
             display: block;
+        }
+
+        #infrastructureList li {
+            border-left: 6px solid var(--color-olive-green);
+            padding-left: 14px;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-family: 'Georgia', serif;
+            color: var(--color-earth-brown);
+            user-select: none;
+            transition: background-color 0.3s ease;
+        }
+
+        #infrastructureList li:hover {
+            background-color: var(--color-beige);
+            border-left-color: var(--color-moss-green);
         }
 
         .loading {
@@ -341,32 +367,49 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: white;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 2000;
+            background: var(--color-soft-white);
+            padding: 26px;
+            border-radius: 22px;
+            box-shadow: 0 12px 28px rgba(101, 142, 58, 0.25);
+            z-index: 2001;
             text-align: center;
+            font-family: 'Georgia', serif;
+            user-select: none;
+            color: var(--color-earth-brown);
+            font-weight: 700;
+            font-size: 18px;
         }
 
         .loading.active {
             display: block;
         }
 
+        /* Мобильная адаптивность */
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
-                height: 45vh;
+                height: 50vh;
                 border-right: none;
-                border-bottom: 1px solid var(--color-border);
-            }
-            
-            .app-container {
-                flex-direction: column;
+                border-bottom: 2px solid var(--color-border);
             }
 
             .building-type-grid {
-                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+
+            .btn {
+                font-size: 14px;
+                padding: 14px 20px;
+            }
+
+            .tab-btn {
+                font-size: 14px;
+                padding: 12px 18px;
+            }
+
+            .metric-score {
+                font-size: 18px;
             }
         }
     </style>
@@ -380,7 +423,7 @@
             </div>
             <div class="app-subtitle">AI-анализ территорий с подключением к Python Backend | Кыргызстан</div>
         </div>
-        <div class="backend-status">
+        <div class="backend-status" id="backendStatus">
             <span class="status-indicator" id="statusIndicator"></span>
             <span id="statusText">Подключение...</span>
         </div>
@@ -396,7 +439,7 @@
             </div>
 
             <div class="alert" id="infoAlert">
-                🤖 Подключён к Python Backend! Выбери территорию на карте для AI-анализа.
+                🤖 Подключён к Python Backend! Выберите территорию на карте для AI-анализа.
             </div>
 
             <div id="results" style="display: none;">
@@ -407,7 +450,6 @@
                         <button class="tab-btn" data-tab="infrastructure">🏗️ Данные</button>
                     </div>
 
-                    <!-- TAB: TERRITORY -->
                     <div id="territory" class="tab-content active">
                         <div class="section-title">Оценки территории</div>
                         
@@ -461,15 +503,14 @@
                             </div>
                         </div>
 
-                        <div class="section-title" style="margin-top: 20px;">💡 Рекомендации</div>
+                        <div class="section-title" style="margin-top: 24px;">💡 Рекомендации</div>
                         <div class="metric-card">
-                            <div id="recommendations" style="font-size: 12px; line-height: 1.6; white-space: pre-line;">
+                            <div id="recommendations" style="font-size: 14px; line-height: 1.6; white-space: pre-line;">
                                 Ожидание анализа...
                             </div>
                         </div>
                     </div>
 
-                    <!-- TAB: INVESTMENT -->
                     <div id="investment" class="tab-content">
                         <div class="section-title">Тип объекта</div>
                         
@@ -499,11 +540,10 @@
                         </div>
                     </div>
 
-                    <!-- TAB: INFRASTRUCTURE -->
                     <div id="infrastructure" class="tab-content">
                         <div class="section-title">Данные инфраструктуры</div>
                         <div class="metric-card">
-                            <ul id="infrastructureList" style="list-style: none; padding: 0; font-size: 12px;">
+                            <ul id="infrastructureList" style="list-style: none; padding: 0; font-size: 14px;">
                                 <li style="padding: 8px;">Загрузка данных...</li>
                             </ul>
                         </div>
@@ -515,53 +555,41 @@
         <div class="map-container">
             <div id="map"></div>
             <div class="loading" id="loading">
-                <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">
-                    🔄 Анализ через Python Backend...
-                </div>
-                <div style="color: var(--color-text-secondary); font-size: 12px;">
-                    Получение данных OpenStreetMap и расчёт оценок
-                </div>
+                <div>🔄 Анализ через Python Backend...</div>
+                <div style="color: var(--color-earth-brown); font-size: 12px; margin-top: 6px;">Получение данных OpenStreetMap и расчёт оценок</div>
             </div>
         </div>
     </div>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
-            crossorigin="anonymous"></script>
+    <!-- Leaflet JS and Draw -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
-    
+
     <script>
-        // ============= КОНФИГУРАЦИЯ BACKEND =============
+        // Backend config
         const API_URL = 'http://localhost:8000';
         let currentProject = null;
         let currentTerritory = null;
         let currentAssessment = null;
 
-        // ============= ПРОВЕРКА BACKEND =============
         async function checkBackendStatus() {
             try {
                 const response = await fetch(`${API_URL}/`);
                 const data = await response.json();
-                
-                document.getElementById('statusIndicator').style.background = 'var(--color-green-500)';
+                document.getElementById('statusIndicator').style.background = 'var(--color-primary)';
                 document.getElementById('statusText').textContent = 'Backend Online';
-                console.log('Backend подключён:', data);
                 return true;
-            } catch (error) {
-                document.getElementById('statusIndicator').style.background = 'var(--color-red-400)';
+            } catch {
+                document.getElementById('statusIndicator').style.background = 'var(--color-earth-brown)';
                 document.getElementById('statusText').textContent = 'Backend Offline';
-                console.error('Backend недоступен:', error);
                 return false;
             }
         }
-
         checkBackendStatus();
         setInterval(checkBackendStatus, 30000);
 
-        // ============= ИНИЦИАЛИЗАЦИЯ КАРТЫ =============
+        // Map initialization
         const map = L.map('map').setView([42.8746, 74.5698], 12);
-
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap',
             maxZoom: 18
@@ -577,32 +605,35 @@
                 rectangle: true,
                 circle: false,
                 marker: false,
-                circlemarker: false
+                circlemarker: false,
             },
-            edit: { featureGroup: drawnItems, remove: true }
+            edit: { featureGroup: drawnItems, remove: true },
         });
 
         let currentPolygon = null;
         let isDrawingEnabled = false;
 
-        // ============= УПРАВЛЕНИЕ РИСОВАНИЕМ =============
-        document.getElementById('drawPolygon').addEventListener('click', function() {
+        // Draw button toggle
+        document.getElementById('drawPolygon').addEventListener('click', () => {
             if (!isDrawingEnabled) {
                 map.addControl(drawControl);
                 isDrawingEnabled = true;
-                this.textContent = '⏸️ Остановить';
-                this.classList.remove('btn-primary');
-                this.classList.add('btn-secondary');
+                const btn = document.getElementById('drawPolygon');
+                btn.textContent = '⏸️ Остановить';
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
             } else {
                 map.removeControl(drawControl);
                 isDrawingEnabled = false;
-                this.textContent = '📐 Выбрать территорию';
-                this.classList.remove('btn-secondary');
-                this.classList.add('btn-primary');
+                const btn = document.getElementById('drawPolygon');
+                btn.textContent = '📐 Выбрать территорию';
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-primary');
             }
         });
 
-        map.on(L.Draw.Event.CREATED, function(event) {
+        // Polygon created handler
+        map.on(L.Draw.Event.CREATED, (event) => {
             if (currentPolygon) drawnItems.removeLayer(currentPolygon);
             currentPolygon = event.layer;
             drawnItems.addLayer(currentPolygon);
@@ -610,85 +641,70 @@
             document.getElementById('infoAlert').textContent = '✅ Территория выбрана! Нажмите "Анализировать"';
         });
 
-        // ============= АНАЛИЗ ЧЕРЕЗ PYTHON BACKEND =============
-        document.getElementById('analyzeBtn').addEventListener('click', async function() {
+        // Analyze button handler
+        document.getElementById('analyzeBtn').addEventListener('click', async () => {
             if (!currentPolygon) return;
 
             const loading = document.getElementById('loading');
             loading.classList.add('active');
 
             try {
-                // Проверка бэкенда
-                const backendOnline = await checkBackendStatus();
-                if (!backendOnline) {
-                    throw new Error('Backend недоступен');
-                }
+                const online = await checkBackendStatus();
+                if (!online) throw new Error('Backend недоступен');
 
-                // Создание проекта (если ещё не создан)
                 if (!currentProject) {
-                    const projectResponse = await fetch(`${API_URL}/projects`, {
+                    const response = await fetch(`${API_URL}/projects`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             name: `Проект ${new Date().toLocaleString('ru-RU')}`,
                             description: 'Анализ территории через SmartBuilder Pro',
-                            location: 'Бишкек, Кыргызстан'
-                        })
+                            location: 'Бишкек, Кыргызстан',
+                        }),
                     });
-
-                    if (!projectResponse.ok) throw new Error('Ошибка создания проекта');
-                    currentProject = await projectResponse.json();
-                    console.log('Проект создан:', currentProject);
+                    if (!response.ok) throw new Error('Ошибка создания проекта');
+                    currentProject = await response.json();
                 }
 
-                // Получение координат полигона в формате GeoJSON
-                const coords = currentPolygon.getLatLngs()[0].map(latlng => [latlng.lng, latlng.lat]);
-                coords.push(coords[0]); // Замыкаем полигон
+                const coords = currentPolygon.getLatLngs()[0].map(({ lat, lng }) => [lng, lat]);
+                coords.push(coords[0]);
 
-                // Создание территории (автоматически запускает анализ)
                 const territoryResponse = await fetch(`${API_URL}/territories`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         name: `Территория ${new Date().toLocaleTimeString('ru-RU')}`,
                         project_id: currentProject.id,
-                        coordinates: [coords]
-                    })
+                        coordinates: [coords],
+                    }),
                 });
-
                 if (!territoryResponse.ok) throw new Error('Ошибка анализа территории');
                 currentTerritory = await territoryResponse.json();
-                console.log('Территория создана:', currentTerritory);
 
-                // Получение оценки
                 const assessmentResponse = await fetch(`${API_URL}/assessments/${currentTerritory.id}`);
                 if (!assessmentResponse.ok) throw new Error('Ошибка получения оценки');
                 currentAssessment = await assessmentResponse.json();
-                console.log('Оценка получена:', currentAssessment);
 
-                // Отображение результатов
                 displayResults(currentAssessment);
+
                 loading.classList.remove('active');
                 document.getElementById('results').style.display = 'block';
                 document.getElementById('infoAlert').style.display = 'none';
-
             } catch (error) {
-                console.error('Ошибка анализа:', error);
                 loading.classList.remove('active');
-                alert(`Ошибка: ${error.message}\n\nУбедитесь, что Python Backend запущен:\nuvicorn main:app --reload`);
+                alert(error.message);
             }
         });
 
-        // ============= ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ =============
+        // Display results utility functions
+
         function displayResults(assessment) {
             updateMetric('safety', assessment.safety_score);
             updateMetric('efficiency', assessment.efficiency_score);
             updateMetric('accessibility', assessment.accessibility_score);
             updateMetric('environmental', assessment.environmental_score);
             updateMetric('overall', assessment.overall_score);
-
             document.getElementById('recommendations').textContent = assessment.recommendations;
-
             displayInfrastructure(assessment.metrics);
         }
 
@@ -700,7 +716,6 @@
         function displayInfrastructure(metrics) {
             const list = document.getElementById('infrastructureList');
             list.innerHTML = '';
-
             const amenities = metrics.amenities || {};
             const infra = {
                 '🏥 Больницы': amenities.hospital || 0,
@@ -713,25 +728,22 @@
                 '🚗 Парковки': amenities.parking || 0,
                 '🏦 Банки': amenities.bank || 0,
                 '📮 Почта': amenities.post_office || 0,
-                '🏗️ Дорог': metrics.roads_count || 0
+                '🏗️ Дорог': metrics.roads_count || 0,
             };
-
             for (const [name, count] of Object.entries(infra)) {
                 const li = document.createElement('li');
-                li.style.cssText = 'padding: 8px; margin-bottom: 4px; border-left: 3px solid var(--color-primary); padding-left: 10px;';
-                li.innerHTML = `<strong>${name}:</strong> ${count}`;
+                li.textContent = `${name}: ${count}`;
                 list.appendChild(li);
             }
         }
 
-        // ============= ИНВЕСТИЦИИ =============
+        // Investment buttons
         document.querySelectorAll('.building-type-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', () => {
                 document.querySelectorAll('.building-type-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
+                btn.classList.add('active');
                 if (currentAssessment) {
-                    analyzeInvestment(currentAssessment, this.dataset.type);
+                    analyzeInvestment(currentAssessment, btn.dataset.type);
                 }
             });
         });
@@ -741,73 +753,74 @@
                 safety: assessment.safety_score,
                 efficiency: assessment.efficiency_score,
                 accessibility: assessment.accessibility_score,
-                environmental: assessment.environmental_score
+                environmental: assessment.environmental_score,
             };
-
             const metrics = assessment.metrics.amenities || {};
-            
-            let investmentScore = 0;
-            let title = '';
-            let description = '';
-            let recommendations = [];
+            let investmentScore = 0, title = "", description = "", recommendations = [];
 
-            if (buildingType === 'residential') {
-                title = '🏠 Жилой дом';
-                investmentScore = Math.round(scores.efficiency * 0.3 + scores.accessibility * 0.3 + scores.safety * 0.25 + scores.environmental * 0.15);
-                description = investmentScore >= 75 ? 'Отличная локация для жилья' : investmentScore >= 60 ? 'Хорошее место' : 'Требуется развитие';
-                recommendations = [
-                    `📊 Общая оценка: ${assessment.overall_score}/100`,
-                    `🏪 Магазинов рядом: ${metrics.restaurant || 0}`,
-                    `🚌 Остановок: ${metrics.bus_station || 0}`,
-                    `🌳 Парков: ${metrics.park || 0}`
-                ];
-            } else if (buildingType === 'hospital') {
-                title = '🏥 Больница';
-                investmentScore = Math.round(scores.accessibility * 0.4 + scores.efficiency * 0.3 + scores.safety * 0.3);
-                description = investmentScore >= 75 ? 'Стратегическое место' : investmentScore >= 60 ? 'Подходит' : 'Низкий спрос';
-                recommendations = [
-                    `📊 Доступность: ${scores.accessibility}/100`,
-                    `🏥 Конкурентов: ${metrics.hospital || 0}`,
-                    `🚌 Транспорт: ${metrics.bus_station || 0}`
-                ];
-            } else if (buildingType === 'school') {
-                title = '🏫 Школа';
-                investmentScore = Math.round(scores.safety * 0.4 + scores.accessibility * 0.35 + scores.environmental * 0.25);
-                description = investmentScore >= 75 ? 'Идеальное место' : investmentScore >= 60 ? 'Хорошая локация' : 'Недостаточно удобно';
-                recommendations = [
-                    `📊 Безопасность: ${scores.safety}/100`,
-                    `🏫 Школ рядом: ${metrics.school || 0}`,
-                    `🌳 Экология: ${scores.environmental}/100`
-                ];
-            } else if (buildingType === 'kindergarten') {
-                title = '👶 Детский сад';
-                investmentScore = Math.round(scores.safety * 0.4 + scores.environmental * 0.35 + scores.accessibility * 0.25);
-                description = investmentScore >= 75 ? 'Отличная зона' : investmentScore >= 60 ? 'Подходит' : 'Требуется улучшение';
-                recommendations = [
-                    `📊 Безопасность: ${scores.safety}/100`,
-                    `👶 Детсадов: ${metrics.kindergarten || 0}`,
-                    `🌳 Экология: ${scores.environmental}/100`
-                ];
-            } else if (buildingType === 'shopping') {
-                title = '🛍️ Торговый центр';
-                investmentScore = Math.round(scores.efficiency * 0.4 + scores.accessibility * 0.35 + scores.safety * 0.25);
-                description = investmentScore >= 75 ? 'Высокий потенциал' : investmentScore >= 60 ? 'Средний спрос' : 'Низкая проходимость';
-                recommendations = [
-                    `📊 Эффективность: ${scores.efficiency}/100`,
-                    `🛍️ Конкурентов: ${metrics.restaurant || 0}`,
-                    `🚌 Транспорт: ${metrics.bus_station || 0}`
-                ];
-            } else if (buildingType === 'factory') {
-                title = '🏭 Завод/Производство';
-                investmentScore = Math.round(scores.efficiency * 0.4 + (100 - scores.environmental) * 0.35 + scores.accessibility * 0.25);
-                description = investmentScore >= 75 ? 'Промзона' : investmentScore >= 60 ? 'Подходит' : 'Близко к жилью';
-                recommendations = [
-                    `📊 Доступность: ${scores.accessibility}/100`,
-                    `🏭 Удалённость от жилья важна`,
-                    `🚗 Дороги: ${assessment.metrics.roads_count || 0}`
-                ];
+            switch(buildingType) {
+                case 'residential':
+                    title = '🏠 Жилой дом';
+                    investmentScore = Math.round(scores.efficiency * 0.15 + scores.accessibility * 0.2 + scores.safety * 0.35 + scores.environmental * 0.30);
+                    description = investmentScore >= 75 ? 'Отличная локация для жилья' : investmentScore >= 60 ? 'Хорошее место' : 'Требуется развитие';
+                    recommendations = [
+                        `📊 Общая оценка: ${assessment.overall_score}/100`,
+                        `🏪 Магазинов рядом: ${metrics.restaurant || 0}`,
+                        `🚌 Остановок: ${metrics.bus_station || 0}`,
+                        `🌳 Парков: ${metrics.park || 0}`,
+                    ];
+                    break;
+                case 'hospital':
+                    title = '🏥 Больница';
+                    investmentScore = Math.round(scores.accessibility * 0.45 + scores.efficiency * 0.3 + scores.safety * 0.3);
+                    description = investmentScore >= 75 ? 'Стратегическое место' : investmentScore >= 60 ? 'Подходит' : 'Низкий спрос';
+                    recommendations = [
+                        `📊 Доступность: ${scores.accessibility}/100`,
+                        `🏥 Конкурентов: ${metrics.hospital || 0}`,
+                        `🚌 Транспорт: ${metrics.bus_station || 0}`,
+                    ];
+                    break;
+                case 'school':
+                    title = '🏫 Школа';
+                    investmentScore = Math.round(scores.safety * 0.4 + scores.accessibility * 0.35 + scores.environmental * 0.25);
+                    description = investmentScore >= 75 ? 'Идеальное место' : investmentScore >= 60 ? 'Хорошая локация' : 'Недостаточно удобно';
+                    recommendations = [
+                        `📊 Безопасность: ${scores.safety}/100`,
+                        `🏫 Школ рядом: ${metrics.school || 0}`,
+                        `🌳 Экология: ${scores.environmental}/100`,
+                    ];
+                    break;
+                case 'kindergarten':
+                    title = '👶 Детский сад';
+                    investmentScore = Math.round(scores.safety * 0.4 + scores.environmental * 0.35 + scores.accessibility * 0.25);
+                    description = investmentScore >= 75 ? 'Отличная зона' : investmentScore >= 60 ? 'Подходит' : 'Требуется улучшение';
+                    recommendations = [
+                        `📊 Безопасность: ${scores.safety}/100`,
+                        `👶 Детсадов: ${metrics.kindergarten || 0}`,
+                        `🌳 Экология: ${scores.environmental}/100`,
+                    ];
+                    break;
+                case 'shopping':
+                    title = '🛍️ Торговый центр';
+                    investmentScore = Math.round(scores.efficiency * 0.4 + scores.accessibility * 0.35 + scores.safety * 0.25);
+                    description = investmentScore >= 75 ? 'Высокий потенциал' : investmentScore >= 60 ? 'Средний спрос' : 'Низкая проходимость';
+                    recommendations = [
+                        `📊 Эффективность: ${scores.efficiency}/100`,
+                        `🛍️ Конкурентов: ${metrics.restaurant || 0}`,
+                        `🚌 Транспорт: ${metrics.bus_station || 0}`,
+                    ];
+                    break;
+                case 'factory':
+                    title = '🏭 Завод/Производство';
+                    investmentScore = Math.round(scores.efficiency * 0.4 + (100 - scores.environmental) * 0.35 + scores.accessibility * 0.25);
+                    description = investmentScore >= 75 ? 'Промзона' : investmentScore >= 60 ? 'Подходит' : 'Близко к жилью';
+                    recommendations = [
+                        `📊 Доступность: ${scores.accessibility}/100`,
+                        `🏭 Удалённость от жилья важна`,
+                        `🚗 Дороги: ${assessment.metrics.roads_count || 0}`,
+                    ];
+                    break;
             }
-
             displayInvestmentResults(investmentScore, title, description, recommendations);
         }
 
@@ -818,36 +831,36 @@
             document.getElementById('investmentDesc').textContent = description;
 
             const scoreEl = document.getElementById('investmentScore');
-            scoreEl.style.color = score >= 75 ? 'var(--color-green-500)' : score >= 60 ? 'var(--color-orange-400)' : 'var(--color-red-400)';
+            scoreEl.style.color = score >= 75 ? 'var(--color-olive-green)' : score >= 60 ? 'darkorange' : 'crimson';
 
             const recList = document.getElementById('investmentRecommendations');
             recList.innerHTML = '';
             recommendations.forEach(rec => {
                 const li = document.createElement('li');
-                li.style.cssText = 'padding: 6px 0; font-size: 12px; color: var(--color-text-secondary);';
+                li.style.padding = '6px 0';
+                li.style.fontSize = '14px';
+                li.style.color = 'var(--color-earth-brown)';
                 li.textContent = rec;
                 recList.appendChild(li);
             });
         }
 
-        // ============= ТАБЫ =============
+        // Tabs
         document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const tabName = this.dataset.tab;
+            btn.addEventListener('click', () => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-                document.getElementById(tabName).classList.add('active');
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
             });
         });
 
-        // ============= ОЧИСТКА =============
-        document.getElementById('clearBtn').addEventListener('click', function() {
+        // Clear button
+        document.getElementById('clearBtn').addEventListener('click', () => {
             if (currentPolygon) drawnItems.removeLayer(currentPolygon);
             currentPolygon = null;
             currentTerritory = null;
             currentAssessment = null;
-            
             document.getElementById('analyzeBtn').disabled = true;
             document.getElementById('results').style.display = 'none';
             document.getElementById('infoAlert').style.display = 'block';
