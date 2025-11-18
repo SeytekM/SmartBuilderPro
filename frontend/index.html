@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBuilder Pro - Многофункциональный инструмент городской жизни и его планирования | Кыргызстан</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+    
+    <style>
+        :root {
+            --color-white: rgba(255, 255, 255, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-orange-500: rgba(168, 75, 47, 1);
+            --color-green-500: rgba(34, 197, 94, 1);
+            --color-blue-400: rgba(59, 130, 246, 1);
+            --color-purple-400: rgba(168, 85, 247, 1);
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-border: rgba(94, 82, 64, 0.2);
+            --color-card-border: rgba(94, 82, 64, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-header {
+            background: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .app-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--color-text);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-teal-700));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .app-subtitle {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-left: 44px;
+        }
+
+        .backend-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: rgba(33, 128, 141, 0.1);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-green-500);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .app-container {
+            display: flex;
+            height: calc(100vh - 88px);
+        }
+
+        .sidebar {
+            width: 360px;
+            background: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .map-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--color-text);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-secondary {
+            background: rgba(94, 82, 64, 0.12);
+            color: var(--color-text);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(94, 82, 64, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .building-type-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .building-type-btn {
+            padding: 12px;
+            border: 2px solid var(--color-border);
+            border-radius: 8px;
+            background: var(--color-surface);
+            color: var(--color-text);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .building-type-btn:hover {
+            border-color: var(--color-primary);
+            background: rgba(33, 128, 141, 0.05);
+        }
+
+        .building-type-btn.active {
+            border-color: var(--color-primary);
+            background: rgba(33, 128, 141, 0.15);
+            color: var(--color-primary);
+        }
+
+        .metric-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .metric-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-text);
+        }
+
+        .metric-score {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .metric-bar {
+            height: 8px;
+            background: rgba(94, 82, 64, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .metric-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-teal-400));
+            transition: width 0.3s;
+        }
+
+        .alert {
+            background: rgba(33, 128, 141, 0.1);
+            border: 1px solid var(--color-primary);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12px;
+            color: var(--color-text);
+            margin-bottom: 16px;
+        }
+
+        .investment-card {
+            background: linear-gradient(135deg, rgba(33, 128, 141, 0.05), rgba(50, 184, 198, 0.05));
+            border: 1px solid var(--color-primary);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .investment-score {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 8px;
+        }
+
+        .investment-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 4px;
+        }
+
+        .investment-desc {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            line-height: 1.4;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--color-border);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 8px 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 2000;
+            text-align: center;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: 45vh;
+                border-right: none;
+                border-bottom: 1px solid var(--color-border);
+            }
+            
+            .app-container {
+                flex-direction: column;
+            }
+
+            .building-type-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-header">
+        <div>
+            <div class="app-title">
+                <span class="logo">SB</span>
+                SmartBuilder Pro
+            </div>
+            <div class="app-subtitle">AI-анализ территорий с подключением к Python Backend | Кыргызстан</div>
+        </div>
+        <div class="backend-status">
+            <span class="status-indicator" id="statusIndicator"></span>
+            <span id="statusText">Подключение...</span>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="section">
+                <div class="section-title">🗺️ Инструменты</div>
+                <button class="btn btn-primary" id="drawPolygon">📐 Выбрать территорию</button>
+                <button class="btn btn-secondary" id="analyzeBtn" disabled>🔍 Анализировать (Python API)</button>
+                <button class="btn btn-secondary" id="clearBtn">🗑️ Очистить</button>
+            </div>
+
+            <div class="alert" id="infoAlert">
+                🤖 Подключён к Python Backend! Выбери территорию на карте для AI-анализа.
+            </div>
+
+            <div id="results" style="display: none;">
+                <div class="section">
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="territory">📊 Оценка</button>
+                        <button class="tab-btn" data-tab="investment">💰 Инвестиции</button>
+                        <button class="tab-btn" data-tab="infrastructure">🏗️ Данные</button>
+                    </div>
+
+                    <!-- TAB: TERRITORY -->
+                    <div id="territory" class="tab-content active">
+                        <div class="section-title">Оценки территории</div>
+                        
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-name">🛡️ Безопасность</span>
+                                <span class="metric-score" id="safety-score">—</span>
+                            </div>
+                            <div class="metric-bar">
+                                <div class="metric-bar-fill" id="safety-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-name">⚡ Эффективность</span>
+                                <span class="metric-score" id="efficiency-score">—</span>
+                            </div>
+                            <div class="metric-bar">
+                                <div class="metric-bar-fill" id="efficiency-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-name">🚶 Доступность</span>
+                                <span class="metric-score" id="accessibility-score">—</span>
+                            </div>
+                            <div class="metric-bar">
+                                <div class="metric-bar-fill" id="accessibility-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-name">🌿 Экология</span>
+                                <span class="metric-score" id="environmental-score">—</span>
+                            </div>
+                            <div class="metric-bar">
+                                <div class="metric-bar-fill" id="environmental-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-name">⭐ Общая оценка</span>
+                                <span class="metric-score" id="overall-score">—</span>
+                            </div>
+                            <div class="metric-bar">
+                                <div class="metric-bar-fill" id="overall-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="section-title" style="margin-top: 20px;">💡 Рекомендации</div>
+                        <div class="metric-card">
+                            <div id="recommendations" style="font-size: 12px; line-height: 1.6; white-space: pre-line;">
+                                Ожидание анализа...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: INVESTMENT -->
+                    <div id="investment" class="tab-content">
+                        <div class="section-title">Тип объекта</div>
+                        
+                        <div class="building-type-grid">
+                            <button class="building-type-btn" data-type="residential">🏠 Жилой дом</button>
+                            <button class="building-type-btn" data-type="hospital">🏥 Больница</button>
+                            <button class="building-type-btn" data-type="factory">🏭 Завод</button>
+                            <button class="building-type-btn" data-type="school">🏫 Школа</button>
+                            <button class="building-type-btn" data-type="kindergarten">👶 Детсад</button>
+                            <button class="building-type-btn" data-type="shopping">🛍️ ТЦ</button>
+                        </div>
+
+                        <div id="investmentResults" style="display: none;">
+                            <div class="investment-card">
+                                <div class="investment-score" id="investmentScore">—</div>
+                                <div class="investment-title" id="investmentTitle">Инвестиционная оценка</div>
+                                <div class="investment-desc" id="investmentDesc">
+                                    Выберите тип объекта
+                                </div>
+                            </div>
+
+                            <div class="section-title">Анализ рынка</div>
+                            <div class="metric-card">
+                                <ul id="investmentRecommendations" style="list-style: none; padding: 0;">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: INFRASTRUCTURE -->
+                    <div id="infrastructure" class="tab-content">
+                        <div class="section-title">Данные инфраструктуры</div>
+                        <div class="metric-card">
+                            <ul id="infrastructureList" style="list-style: none; padding: 0; font-size: 12px;">
+                                <li style="padding: 8px;">Загрузка данных...</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="loading" id="loading">
+                <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">
+                    🔄 Анализ через Python Backend...
+                </div>
+                <div style="color: var(--color-text-secondary); font-size: 12px;">
+                    Получение данных OpenStreetMap и расчёт оценок
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+            crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+    
+    <script>
+        // ============= КОНФИГУРАЦИЯ BACKEND =============
+        const API_URL = 'http://localhost:8000';
+        let currentProject = null;
+        let currentTerritory = null;
+        let currentAssessment = null;
+
+        // ============= ПРОВЕРКА BACKEND =============
+        async function checkBackendStatus() {
+            try {
+                const response = await fetch(`${API_URL}/`);
+                const data = await response.json();
+                
+                document.getElementById('statusIndicator').style.background = 'var(--color-green-500)';
+                document.getElementById('statusText').textContent = 'Backend Online';
+                console.log('Backend подключён:', data);
+                return true;
+            } catch (error) {
+                document.getElementById('statusIndicator').style.background = 'var(--color-red-400)';
+                document.getElementById('statusText').textContent = 'Backend Offline';
+                console.error('Backend недоступен:', error);
+                return false;
+            }
+        }
+
+        checkBackendStatus();
+        setInterval(checkBackendStatus, 30000);
+
+        // ============= ИНИЦИАЛИЗАЦИЯ КАРТЫ =============
+        const map = L.map('map').setView([42.8746, 74.5698], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap',
+            maxZoom: 18
+        }).addTo(map);
+
+        const drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        const drawControl = new L.Control.Draw({
+            draw: {
+                polygon: { allowIntersection: false, showArea: true, metric: true },
+                polyline: false,
+                rectangle: true,
+                circle: false,
+                marker: false,
+                circlemarker: false
+            },
+            edit: { featureGroup: drawnItems, remove: true }
+        });
+
+        let currentPolygon = null;
+        let isDrawingEnabled = false;
+
+        // ============= УПРАВЛЕНИЕ РИСОВАНИЕМ =============
+        document.getElementById('drawPolygon').addEventListener('click', function() {
+            if (!isDrawingEnabled) {
+                map.addControl(drawControl);
+                isDrawingEnabled = true;
+                this.textContent = '⏸️ Остановить';
+                this.classList.remove('btn-primary');
+                this.classList.add('btn-secondary');
+            } else {
+                map.removeControl(drawControl);
+                isDrawingEnabled = false;
+                this.textContent = '📐 Выбрать территорию';
+                this.classList.remove('btn-secondary');
+                this.classList.add('btn-primary');
+            }
+        });
+
+        map.on(L.Draw.Event.CREATED, function(event) {
+            if (currentPolygon) drawnItems.removeLayer(currentPolygon);
+            currentPolygon = event.layer;
+            drawnItems.addLayer(currentPolygon);
+            document.getElementById('analyzeBtn').disabled = false;
+            document.getElementById('infoAlert').textContent = '✅ Территория выбрана! Нажмите "Анализировать"';
+        });
+
+        // ============= АНАЛИЗ ЧЕРЕЗ PYTHON BACKEND =============
+        document.getElementById('analyzeBtn').addEventListener('click', async function() {
+            if (!currentPolygon) return;
+
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+
+            try {
+                // Проверка бэкенда
+                const backendOnline = await checkBackendStatus();
+                if (!backendOnline) {
+                    throw new Error('Backend недоступен');
+                }
+
+                // Создание проекта (если ещё не создан)
+                if (!currentProject) {
+                    const projectResponse = await fetch(`${API_URL}/projects`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: `Проект ${new Date().toLocaleString('ru-RU')}`,
+                            description: 'Анализ территории через SmartBuilder Pro',
+                            location: 'Бишкек, Кыргызстан'
+                        })
+                    });
+
+                    if (!projectResponse.ok) throw new Error('Ошибка создания проекта');
+                    currentProject = await projectResponse.json();
+                    console.log('Проект создан:', currentProject);
+                }
+
+                // Получение координат полигона в формате GeoJSON
+                const coords = currentPolygon.getLatLngs()[0].map(latlng => [latlng.lng, latlng.lat]);
+                coords.push(coords[0]); // Замыкаем полигон
+
+                // Создание территории (автоматически запускает анализ)
+                const territoryResponse = await fetch(`${API_URL}/territories`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: `Территория ${new Date().toLocaleTimeString('ru-RU')}`,
+                        project_id: currentProject.id,
+                        coordinates: [coords]
+                    })
+                });
+
+                if (!territoryResponse.ok) throw new Error('Ошибка анализа территории');
+                currentTerritory = await territoryResponse.json();
+                console.log('Территория создана:', currentTerritory);
+
+                // Получение оценки
+                const assessmentResponse = await fetch(`${API_URL}/assessments/${currentTerritory.id}`);
+                if (!assessmentResponse.ok) throw new Error('Ошибка получения оценки');
+                currentAssessment = await assessmentResponse.json();
+                console.log('Оценка получена:', currentAssessment);
+
+                // Отображение результатов
+                displayResults(currentAssessment);
+                loading.classList.remove('active');
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('infoAlert').style.display = 'none';
+
+            } catch (error) {
+                console.error('Ошибка анализа:', error);
+                loading.classList.remove('active');
+                alert(`Ошибка: ${error.message}\n\nУбедитесь, что Python Backend запущен:\nuvicorn main:app --reload`);
+            }
+        });
+
+        // ============= ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ =============
+        function displayResults(assessment) {
+            updateMetric('safety', assessment.safety_score);
+            updateMetric('efficiency', assessment.efficiency_score);
+            updateMetric('accessibility', assessment.accessibility_score);
+            updateMetric('environmental', assessment.environmental_score);
+            updateMetric('overall', assessment.overall_score);
+
+            document.getElementById('recommendations').textContent = assessment.recommendations;
+
+            displayInfrastructure(assessment.metrics);
+        }
+
+        function updateMetric(id, score) {
+            document.getElementById(id + '-score').textContent = score;
+            document.getElementById(id + '-bar').style.width = score + '%';
+        }
+
+        function displayInfrastructure(metrics) {
+            const list = document.getElementById('infrastructureList');
+            list.innerHTML = '';
+
+            const amenities = metrics.amenities || {};
+            const infra = {
+                '🏥 Больницы': amenities.hospital || 0,
+                '🏥 Клиники': amenities.clinic || 0,
+                '🏫 Школы': amenities.school || 0,
+                '👶 Детсады': amenities.kindergarten || 0,
+                '🚌 Остановки': amenities.bus_station || 0,
+                '🛍️ Магазины': (amenities.restaurant || 0) + (amenities.cafe || 0),
+                '🌳 Парки': amenities.park || 0,
+                '🚗 Парковки': amenities.parking || 0,
+                '🏦 Банки': amenities.bank || 0,
+                '📮 Почта': amenities.post_office || 0,
+                '🏗️ Дорог': metrics.roads_count || 0
+            };
+
+            for (const [name, count] of Object.entries(infra)) {
+                const li = document.createElement('li');
+                li.style.cssText = 'padding: 8px; margin-bottom: 4px; border-left: 3px solid var(--color-primary); padding-left: 10px;';
+                li.innerHTML = `<strong>${name}:</strong> ${count}`;
+                list.appendChild(li);
+            }
+        }
+
+        // ============= ИНВЕСТИЦИИ =============
+        document.querySelectorAll('.building-type-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.building-type-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                if (currentAssessment) {
+                    analyzeInvestment(currentAssessment, this.dataset.type);
+                }
+            });
+        });
+
+        function analyzeInvestment(assessment, buildingType) {
+            const scores = {
+                safety: assessment.safety_score,
+                efficiency: assessment.efficiency_score,
+                accessibility: assessment.accessibility_score,
+                environmental: assessment.environmental_score
+            };
+
+            const metrics = assessment.metrics.amenities || {};
+            
+            let investmentScore = 0;
+            let title = '';
+            let description = '';
+            let recommendations = [];
+
+            if (buildingType === 'residential') {
+                title = '🏠 Жилой дом';
+                investmentScore = Math.round(scores.efficiency * 0.3 + scores.accessibility * 0.3 + scores.safety * 0.25 + scores.environmental * 0.15);
+                description = investmentScore >= 75 ? 'Отличная локация для жилья' : investmentScore >= 60 ? 'Хорошее место' : 'Требуется развитие';
+                recommendations = [
+                    `📊 Общая оценка: ${assessment.overall_score}/100`,
+                    `🏪 Магазинов рядом: ${metrics.restaurant || 0}`,
+                    `🚌 Остановок: ${metrics.bus_station || 0}`,
+                    `🌳 Парков: ${metrics.park || 0}`
+                ];
+            } else if (buildingType === 'hospital') {
+                title = '🏥 Больница';
+                investmentScore = Math.round(scores.accessibility * 0.4 + scores.efficiency * 0.3 + scores.safety * 0.3);
+                description = investmentScore >= 75 ? 'Стратегическое место' : investmentScore >= 60 ? 'Подходит' : 'Низкий спрос';
+                recommendations = [
+                    `📊 Доступность: ${scores.accessibility}/100`,
+                    `🏥 Конкурентов: ${metrics.hospital || 0}`,
+                    `🚌 Транспорт: ${metrics.bus_station || 0}`
+                ];
+            } else if (buildingType === 'school') {
+                title = '🏫 Школа';
+                investmentScore = Math.round(scores.safety * 0.4 + scores.accessibility * 0.35 + scores.environmental * 0.25);
+                description = investmentScore >= 75 ? 'Идеальное место' : investmentScore >= 60 ? 'Хорошая локация' : 'Недостаточно удобно';
+                recommendations = [
+                    `📊 Безопасность: ${scores.safety}/100`,
+                    `🏫 Школ рядом: ${metrics.school || 0}`,
+                    `🌳 Экология: ${scores.environmental}/100`
+                ];
+            } else if (buildingType === 'kindergarten') {
+                title = '👶 Детский сад';
+                investmentScore = Math.round(scores.safety * 0.4 + scores.environmental * 0.35 + scores.accessibility * 0.25);
+                description = investmentScore >= 75 ? 'Отличная зона' : investmentScore >= 60 ? 'Подходит' : 'Требуется улучшение';
+                recommendations = [
+                    `📊 Безопасность: ${scores.safety}/100`,
+                    `👶 Детсадов: ${metrics.kindergarten || 0}`,
+                    `🌳 Экология: ${scores.environmental}/100`
+                ];
+            } else if (buildingType === 'shopping') {
+                title = '🛍️ Торговый центр';
+                investmentScore = Math.round(scores.efficiency * 0.4 + scores.accessibility * 0.35 + scores.safety * 0.25);
+                description = investmentScore >= 75 ? 'Высокий потенциал' : investmentScore >= 60 ? 'Средний спрос' : 'Низкая проходимость';
+                recommendations = [
+                    `📊 Эффективность: ${scores.efficiency}/100`,
+                    `🛍️ Конкурентов: ${metrics.restaurant || 0}`,
+                    `🚌 Транспорт: ${metrics.bus_station || 0}`
+                ];
+            } else if (buildingType === 'factory') {
+                title = '🏭 Завод/Производство';
+                investmentScore = Math.round(scores.efficiency * 0.4 + (100 - scores.environmental) * 0.35 + scores.accessibility * 0.25);
+                description = investmentScore >= 75 ? 'Промзона' : investmentScore >= 60 ? 'Подходит' : 'Близко к жилью';
+                recommendations = [
+                    `📊 Доступность: ${scores.accessibility}/100`,
+                    `🏭 Удалённость от жилья важна`,
+                    `🚗 Дороги: ${assessment.metrics.roads_count || 0}`
+                ];
+            }
+
+            displayInvestmentResults(investmentScore, title, description, recommendations);
+        }
+
+        function displayInvestmentResults(score, title, description, recommendations) {
+            document.getElementById('investmentResults').style.display = 'block';
+            document.getElementById('investmentScore').textContent = score;
+            document.getElementById('investmentTitle').textContent = title;
+            document.getElementById('investmentDesc').textContent = description;
+
+            const scoreEl = document.getElementById('investmentScore');
+            scoreEl.style.color = score >= 75 ? 'var(--color-green-500)' : score >= 60 ? 'var(--color-orange-400)' : 'var(--color-red-400)';
+
+            const recList = document.getElementById('investmentRecommendations');
+            recList.innerHTML = '';
+            recommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.style.cssText = 'padding: 6px 0; font-size: 12px; color: var(--color-text-secondary);';
+                li.textContent = rec;
+                recList.appendChild(li);
+            });
+        }
+
+        // ============= ТАБЫ =============
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+
+        // ============= ОЧИСТКА =============
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            if (currentPolygon) drawnItems.removeLayer(currentPolygon);
+            currentPolygon = null;
+            currentTerritory = null;
+            currentAssessment = null;
+            
+            document.getElementById('analyzeBtn').disabled = true;
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('infoAlert').style.display = 'block';
+            document.getElementById('infoAlert').textContent = '🤖 Подключён к Python Backend! Выберите территорию.';
+        });
+    </script>
+</body>
+</html>
